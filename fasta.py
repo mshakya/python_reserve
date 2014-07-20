@@ -67,7 +67,6 @@ class FastaPro():
                     out_file.write(str(seq.seq)+'\n')
 
 
-
 def seqlist(fasta_file, attribute_file):
     """
     extracts sequence description that matches strings in the attribute_file and gives out a list
@@ -79,14 +78,14 @@ def seqlist(fasta_file, attribute_file):
     seq_descs = []
 
     for attributes in open(attribute_file, 'r'):
-        in_fasta = SeqIO.parse(fasta_file,'fasta')
+        in_fasta = SeqIO.parse(fasta_file, 'fasta')
         for sequences in in_fasta:
             if attributes in sequences.description:
                 seq_descs.append(sequences.description)
     return seq_descs
 
 
-def removeseq(fasta_file,seq_list):
+def removeseq(fasta_file, seq_list):
     """
     create '*_v1.fasta' after removing sequence from fasta_file with header that matches the one provided in seq_list.
 
@@ -94,7 +93,7 @@ def removeseq(fasta_file,seq_list):
     seq_list: list of sequence header to be removed from the fasta_file
     """
 
-    out_fasta=open(fasta_file+'_v1.fasta','w')
+    out_fasta = open(fasta_file+'_v1.fasta','w')
     in_fasta=SeqIO.parse(fasta_file,'fasta')
     for sequences in in_fasta:
         if sequences.description not in seq_list:
@@ -103,8 +102,7 @@ def removeseq(fasta_file,seq_list):
     out_fasta.close()
 
 
-
-def fastadict(fasta_file,separ,pos):
+def fastadict(fasta_file, separ, pos):
     """
     creates dictionary with a part of sequence header as key and sequence as value
 
@@ -115,77 +113,76 @@ def fastadict(fasta_file,separ,pos):
     For example fastadict(fasta_file,'|',3)  will create a dictionary with key as
     the segement from 4th position
     """
-    fasta_dict={}
-    fasta_handle=SeqIO.parse(fasta_file,'fasta')
+    fasta_dict = {}
+    fasta_handle = SeqIO.parse(fasta_file, 'fasta')
     for sequence in fasta_handle:
-        fasta_dict[sequence.description.split(separ)[pos]]=sequence.seq
+        fasta_dict[sequence.description.split(separ)[pos]] = sequence.seq
     return fasta_dict
 
 
 def renameseq(fasta_file):
     """
-    renames fasta sequences with series of numbers
+    renames fasta sequences with series of number indices
 
     'sequence' was added to the numbers to work with boxshade function,
     """
-    out_file=fasta_file.split('.')[0]
-    out_fasta=open(out_file+'_renme.faa','w')
-    fasta_handle=SeqIO.parse(fasta_file,'fasta')
-    i=0
+    out_file = fasta_file.split('.')[0]
+    out_fasta = open(out_file+'_renme.faa', 'w')
+    fasta_handle = SeqIO.parse(fasta_file, 'fasta')
+    i = 0
     for sequences in fasta_handle:
         out_fasta.write('>'+str(i)+'sequenc'+'\n')
         out_fasta.write(str(sequences.seq)+'\n')
-        i=i+1
+        i = i+1
     out_fasta.close()
     return str(out_file+'_renme.faa')
 
 
-def gicsv2fasta(csv_file,source_fasta,result_fasta):
+def gicsv2fasta(csv_file, source_fasta, result_fasta):
     """ extracts fasta file given the csv file that contains gi number in the second column
     """
-    gi_file=open(csv_file,'r')
-    out_fasta=open(result_fasta,'w')
-    gi_list=[]
+    gi_file = open(csv_file, 'r')
+    out_fasta = open(result_fasta, 'w')
+    gi_list = []
     for line in gi_file:
         gi_list.append(line.split(',')[1].split('\n')[0])
-    open_fasta=SeqIO.parse(open(source_fasta),'fasta')
+    open_fasta = SeqIO.parse(open(source_fasta), 'fasta')
     for seq in open_fasta:
         if seq.id.split('|')[1] in gi_list:
-            SeqIO.write(seq,out_fasta,'fasta')
+            SeqIO.write(seq, out_fasta, 'fasta')
     out_fasta.close()
     gi_file.close()
 
 
 def duplicate(fasta_file):
-    """inputs a fasta file, outputs fasta file with duplicate sequences removed but sequence description combined in the header
-
-
+    """inputs a fasta file, outputs fasta file with
+    duplicate sequences removed but sequence description combined in the header
     """
-    sequences={}
-    for seq_record in SeqIO.parse(fasta_file,'fasta'):
-                sequence=str(seq_record.seq).upper()
+    sequences = {}
+    for seq_record in SeqIO.parse(fasta_file, 'fasta'):
+                sequence = str(seq_record.seq).upper()
                 if sequence not in sequences:
-                        sequences[sequence]=seq_record.id
+                        sequences[sequence] = seq_record.id
                 else:
-                        sequences[sequence]+='_'+seq_record.id
+                        sequences[sequence] + = '_'+seq_record.id
 
-    out_file=fasta_file.split('.')[0]+'_uniq.faa'
-    output_file=open(out_file,"w+")
+    out_file = fasta_file.split('.')[0]+'_uniq.faa'
+    output_file = open(out_file, "w+")
     #Just Read the Hash Table and write on the file as a fasta format
     for sequence in sequences:
                 output_file.write(">"+sequences[sequence]+"\n"+sequence+"\n")
     output_file.close()
 
 
-def list2fasta(seqlist,source_fastafile,out_fastafile):
+def list2fasta(seqlist, source_fastafile, out_fastafile):
     """extracts fasta based on the list provided
     """
 
-    result_handle=open(out_fastafile,'w')
-    seqiter = SeqIO.parse(open(source_fastafile,'r'), 'fasta')
+    result_handle = open(out_fastafile, 'w')
+    seqiter = SeqIO.parse(open(source_fastafile, 'r'), 'fasta')
     for seq in seqiter:
         if seq.id in seqlist:
-            SeqIO.write(seq, result_handle,'fasta')
+            SeqIO.write(seq, result_handle, 'fasta')
 
     result_handle.close()
 
